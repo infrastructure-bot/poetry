@@ -89,6 +89,14 @@ class Env(object):
         """
         return self._bin("pip")
 
+    @property
+    def platform(self):  # type: () -> str
+        return sys.platform
+
+    @property
+    def os(self):  # type: () -> str
+        return os.name
+
     @classmethod
     def get(cls, reload=False, cwd=None):  # type: (bool, Path) -> Env
         if cls._env is not None and not reload:
@@ -517,11 +525,22 @@ class NullEnv(SystemEnv):
 
 
 class MockEnv(NullEnv):
-    def __init__(self, version_info=(3, 7, 0), python_implementation="cpython"):
-        super(MockEnv, self).__init__()
+    def __init__(
+        self,
+        version_info=(3, 7, 0),
+        python_implementation="CPython",
+        platform="darwin",
+        os_name="posix",
+        is_venv=False,
+        **kwargs
+    ):
+        super(MockEnv, self).__init__(**kwargs)
 
         self._version_info = version_info
         self._python_implementation = python_implementation
+        self._platform = platform
+        self._os_name = os_name
+        self._is_venv = is_venv
 
     @property
     def version_info(self):  # type: () -> Tuple[int]
@@ -530,3 +549,14 @@ class MockEnv(NullEnv):
     @property
     def python_implementation(self):  # type: () -> str
         return self._python_implementation
+
+    @property
+    def platform(self):  # type: () -> str
+        return self._platform
+
+    @property
+    def os(self):  # type: () -> str
+        return self._os_name
+
+    def is_venv(self):  # type: () -> bool
+        return self._is_venv
